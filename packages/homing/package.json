@@ -25,6 +25,7 @@
   "types": "es/index.d.ts",
   "unpkg": "dist/index.min.js",
   "scripts": {
+    "prepublish": "npm run build",
     "build": "lough-build",
     "dev": "lough-build dev"
   },
