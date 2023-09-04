@@ -1,0 +1,47 @@
+{
+  "name": "@homing/wechat",
+  "version": "0.1.0",
+  "description": "Homing in wechat.",
+  "keywords": [
+    "typescript",
+    "homing",
+    "wechat"
+  ],
+  "author": {
+    "name": "City",
+    "email": "city@nanzc.com"
+  },
+  "homepage": "https://github.com/homing-city/homing/tree/main/packages/wechat#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/homing-city/homing.git"
+  },
+  "files": [
+    "dist",
+    "lib",
+    "es"
+  ],
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "types": "es/index.d.ts",
+  "unpkg": "dist/index.min.js",
+  "scripts": {
+    "build": "lough-build",
+    "dev": "lough-build dev"
+  },
+  "dependencies": {
+    "homing": "^0.1.0",
+    "miniprogram-api-typings": "^3.12.0"
+  },
+  "peerDependencies": {
+    "homing": "^0.1.0",
+    "miniprogram-api-typings": "^3.12.0"
+  },
+  "devDependencies": {
+    "@lough/build-cli": "^0.2.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
