@@ -2,6 +2,7 @@ import { createProperty, observable, watch, Observer, autorun } from 'homing';
 import { OBSERVER_KEY } from './constants/index';
 import { updateData } from './core/data';
 import { IData, ObservableTarget } from './typings/index';
+import { setValue, splitPath } from './utils/data';
 import { deepClone } from './utils/index';
 
 /**
@@ -64,8 +65,10 @@ export const observerPageParams = (
         _isInnerChange = false;
       } else {
         for (const key in data) {
-          this.data[key] = data[key];
+          setValue(this.data, splitPath(key), data[key]);
         }
+        if (!this.realCallback) this.realCallback = [];
+        this.realCallback.push(callback);
         Observer.end();
       }
     };
@@ -180,8 +183,10 @@ export const observerComponentParams = (
         _isInnerChange = false;
       } else {
         for (const key in data) {
-          this.data[key] = data[key];
+          setValue(this.data, splitPath(key), data[key]);
         }
+        if (!this.realCallback) this.realCallback = [];
+        this.realCallback.push(callback);
         Observer.end();
       }
     };

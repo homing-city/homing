@@ -1,5 +1,6 @@
 import { ChangeType, IChangeItem, IKey, Observer, getObserver } from 'homing';
 import { IData } from '../typings/index';
+import { joinPath, getValue } from '../utils/data';
 
 type IChangeData = {
   path: IKey[];
@@ -15,27 +16,6 @@ const getChangePathList = (rootObserver: Observer, current: Observer, pathList: 
   }
 
   return pathList;
-};
-
-const getPath = (...path: IKey[]) => {
-  return path
-    .map((key, index) => {
-      if (index === 0) return key;
-      if (/^(\d|[1-9]\d+)$/.test(String(key))) return `[${String(key)}]`;
-      return `.${String(key)}`;
-    })
-    .join('');
-};
-
-const getValue = (root: any, path: IKey[]) => {
-  let data = root;
-  for (let i = 0; i < path.length; i++) {
-    if (typeof data !== 'object' || data == null) {
-      return undefined;
-    }
-    data = data[path[i]];
-  }
-  return data;
 };
 
 class ChangeMerge {
@@ -64,12 +44,12 @@ class ChangeMerge {
         current = item.key;
         if (item.start && item.end) {
           const arr = getValue(target, item.path);
-          const path = getPath(...item.path);
+          const path = joinPath(...item.path);
           for (let i = item.start; i < item.end; i++) {
             change[path + `[${i}]`] = arr[i];
           }
         } else {
-          change[getPath(...item.path)] = getValue(target, item.path);
+          change[joinPath(...item.path)] = getValue(target, item.path);
         }
       });
 
@@ -136,6 +116,7 @@ interface IMpInstance {
   __changedObservers?: Set<Observer>;
   data: IData;
   is: string;
+  realCallback: Array<Function> | null;
 }
 
 const changedInstance = new Set<IMpInstance>();
@@ -154,7 +135,19 @@ export const updateData = (instance: IMpInstance, observer: Observer) => {
           const change = getMpInstanceChange(_instance, changeTrace);
           if (change) {
             console.log('[change]', _instance.is, change);
-            _instance.setData(change, null, true);
+            _instance.setData(
+              change,
+              () => {
+                if (_instance.realCallback?.length) {
+                  _instance.realCallback.forEach(fn => {
+                    if (fn) fn();
+                  });
+
+                  _instance.realCallback = null;
+                }
+              },
+              true
+            );
           }
           _instance.__changedObservers.clear();
         }
