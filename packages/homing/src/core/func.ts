@@ -2,11 +2,7 @@ import { IHandle } from '../typings/index';
 import { getObserver } from '../utils/index';
 import { Observer } from './observer';
 
-export const autorun = (handle: IHandle) => {
-  Observer.start(handle);
-  handle();
-  return Observer.end();
-};
+export const autorun = Observer.autorun;
 
 /**
  *

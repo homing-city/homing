@@ -27,7 +27,8 @@
   "scripts": {
     "prepublish": "npm run build",
     "build": "lough-build",
-    "dev": "lough-build dev"
+    "dev": "lough-build dev",
+    "test": "jest"
   },
   "devDependencies": {
     "@lough/build-cli": "^0.2.0"

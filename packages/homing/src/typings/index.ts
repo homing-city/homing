@@ -2,7 +2,7 @@ import { ChangeType } from '../constants/index';
 
 export type IKey = string | number | symbol;
 
-export type IHandle = () => void;
+export type IHandle = (() => void) & { disposes?: Set<IHandle>[]; disposer?: () => void };
 
 export interface IChangeValueSet {
   type: ChangeType.Set;

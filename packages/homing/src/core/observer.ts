@@ -21,16 +21,24 @@ export class Observer {
 
   static handler: IHandle | null = null;
 
-  static disposer: any = null;
-
   static start(handler: IHandle) {
-    this.disposer = null;
+    if (!handler.disposer) {
+      handler.disposer = () => {
+        handler.disposes?.forEach(handleSet => {
+          handleSet.delete(handler);
+        });
+        handler.disposes = undefined;
+      };
+    }
+    handler.disposer?.();
     this.handler = handler;
   }
 
   static end() {
+    const handler = this.handler;
     this.handler = null;
-    return this.disposer;
+
+    return handler?.disposer;
   }
 
   private static _flushHandles?: Set<IHandle>;
@@ -57,42 +65,45 @@ export class Observer {
         this.handles[key] = handles;
       }
       handles.add(handler);
-      Observer.disposer = () => {
-        this?.handles[key].delete(handler);
-      };
+      if (!handler.disposes) {
+        handler.disposes = [];
+      }
+      handler.disposes.push(this?.handles[key]);
     }
   }
 
+  static autorun(handle: IHandle) {
+    Observer.start(handle);
+    handle();
+    return Observer.end();
+  }
+
   run(key?: IKey) {
+    const handleSet = Observer._flushHandles || new Set();
     if (key) {
       const handles = this.handles[key];
       if (handles) {
-        if (Observer._flushHandles) {
-          handles.forEach(cb => {
-            Observer._flushHandles?.add(cb);
-          });
-        } else {
-          handles.forEach(cb => cb());
-        }
+        handles.forEach(cb => {
+          handleSet.add(cb);
+        });
       }
-
-      return !!handles?.size;
     } else {
-      const handles = Observer._flushHandles || new Set<IHandle>();
       for (const key in this.handles) {
         this.handles[key].forEach(cb => {
-          handles.add(cb);
+          handleSet.add(cb);
         });
       }
       this.parents.forEach((parent, index) => {
-        parent.run(this.parentKeys[index]);
+        parent.handles[this.parentKeys[index]]?.forEach(cb => {
+          handleSet.add(cb);
+        });
       });
+    }
 
-      if (!Observer._flushHandles) {
-        handles.forEach(cb => cb());
-      }
-
-      return !!handles.size;
+    if (!Observer._flushHandles) {
+      handleSet.forEach(cb => {
+        Observer.autorun(cb);
+      });
     }
   }
 
