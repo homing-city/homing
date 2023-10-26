@@ -1,6 +1,6 @@
 # `@homing/wechat`
 
-> 这是一个用于微信小程序的库。
+> [`@homing/wechat`](https://github.com/homing-city/homing/tree/main/packages/wechat#readme) 是一个用于微信小程序的库。
 
 
 
@@ -282,3 +282,16 @@ this.setData({
 });
 ```
 
+
+
+## 示例
+
+[示例仓库](https://github.com/homing-city/examples)
+
+小程序预览码：
+
+![homing_wechat_qrcode](https://github.com/homing-city/examples/blob/main/images/homing_wechat_qrcode.jpg?raw=true)
+
+
+
+> 可以打开小程序性能调试，将 `Homing` 和原生进行性能对比。
