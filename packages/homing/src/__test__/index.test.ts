@@ -85,4 +85,28 @@ describe('homing', () => {
 
     observedObj.users.push({ name: 'Smith' });
   });
+
+  it('应该处理自身计算属性', done => {
+    class TestStore {
+      constructor() {
+        return observable(this);
+      }
+
+      a = 1;
+
+      get b() {
+        return this.a + 1;
+      }
+    }
+
+    const testStore = new TestStore();
+
+    autorun(() => {
+      if (testStore.b === 3) {
+        done();
+      }
+    });
+
+    testStore.a = testStore.a + 1;
+  });
 });

@@ -12,8 +12,11 @@ export const observable = <T extends object>(target: T, key?: IKey, parent?: Obs
   if (typeof target !== 'object' || target === null) {
     return target;
   }
-
+  if (key && Object.getOwnPropertyDescriptor(Object.getPrototypeOf(target), key)?.get) {
+    return target;
+  }
   target = Object.getOwnPropertyDescriptor(target, __target__)?.get?.() ?? target;
+
   const observer = Object.getOwnPropertyDescriptor(target, __observer__)?.get?.() ?? new Observer(target);
   if (key !== undefined && parent) {
     observer.addParent(key, parent);

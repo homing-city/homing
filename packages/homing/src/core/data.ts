@@ -4,8 +4,14 @@ import { observable } from './observable';
 import { Observer } from './observer';
 
 export const objectObservable = <T extends object>(target: T, observer: Observer) => {
+  let _proxy: any = null;
   const proxy = new Proxy(target, {
     get(v, key) {
+      const _get = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(target), key)?.get;
+      if (_get) {
+        return _get.call(_proxy);
+      }
+
       observer.collect(key);
       return observable((target as any)[key], key, observer);
     },
@@ -40,7 +46,7 @@ export const objectObservable = <T extends object>(target: T, observer: Observer
       return true;
     }
   });
-
+  _proxy = proxy;
   return proxy;
 };
 
