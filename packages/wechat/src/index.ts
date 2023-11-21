@@ -81,10 +81,7 @@ export const observerPageParams = (
       handles.push(() => {
         const state = fn();
         Observer.end();
-
-        if (state) {
-          this.data[key] = state;
-        }
+        this.data[key] = state;
       });
     }
     reactionCleanups.push(
@@ -199,10 +196,7 @@ export const observerComponentParams = (
       handles.push(() => {
         const state = fn();
         Observer.end();
-
-        if (state) {
-          this.data[key] = state;
-        }
+        this.data[key] = state;
       });
     }
     reactionCleanups.push(
