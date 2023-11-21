@@ -1,6 +1,6 @@
 {
   "name": "@homing/wechat",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Homing in wechat.",
   "keywords": [
     "typescript",
@@ -31,7 +31,7 @@
     "dev": "lough-build dev"
   },
   "dependencies": {
-    "homing": "^1.0.1",
+    "homing": "^1.0.2",
     "miniprogram-api-typings": "^3.12.0"
   },
   "devDependencies": {
