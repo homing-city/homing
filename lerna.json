@@ -1,6 +1,7 @@
 {
   "version": "independent",
   "npmClient": "npm",
+  "useWorkspaces": true,
   "useNx": false,
   "command": {
     "publish": {
