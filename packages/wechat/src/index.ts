@@ -237,11 +237,11 @@ export const observerPage = <T extends ObservableTarget<WechatMiniprogram.Page.C
  * 观察组件
  * @description 将组件转为响应式
  */
-export const observerComponent = <T extends ObservableTarget<WechatMiniprogram.Page.Constructor>>(target: T) => {
+export const observerComponent = <T extends ObservableTarget<WechatMiniprogram.Component.Constructor>>(target: T) => {
   if (target[OBSERVER_KEY]) return target;
 
   const component = function (params) {
-    return target(observerPageParams(params));
+    return target(observerComponentParams(params));
   } as ObservableTarget<T>;
 
   return Object.defineProperty(component, OBSERVER_KEY, { configurable: true, enumerable: false, value: true });
