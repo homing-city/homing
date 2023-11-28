@@ -1,6 +1,6 @@
 # `@homing/wechat`
 
-> [`@homing/wechat`](https://github.com/homing-city/homing/tree/main/packages/wechat#readme) 是一个用于微信小程序的库。
+> [`@homing/wechat`](https://github.com/homing-city/homing/tree/main/packages/wechat#readme) 是一个用于微信小程序的状态管理库。
 
 
 
