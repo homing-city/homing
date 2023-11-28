@@ -116,13 +116,24 @@ export const observerComponentParams = (
 
   if (!params.lifetimes) params.lifetimes = {};
 
-  const ready = params.lifetimes.ready;
+  const ready = params.lifetimes.ready || params.ready;
 
   const reactionCleanups: any[] = [];
-  const paramsData = params.data || {};
-  params.data = {} as any;
+  if (!params.data) params.data = {};
+  const paramsData = {};
+  for (const key in params.data) {
+    if (Object.hasOwnProperty.call(params.data, key)) {
+      const prop = Object.getOwnPropertyDescriptor(params.data, key);
+      if (prop?.get) {
+        Object.defineProperty(paramsData, key, prop);
+        delete params.data[key];
+      }
+    }
+  }
 
   params.lifetimes.ready = function (this: WechatMiniprogram.Component.Instance<any, any, any>, ...args) {
+    Object.assign(paramsData, this.data || {});
+
     const _properties = observable({ ...this.properties });
     const _propertiesMap: PropertyDescriptorMap = {};
     for (const key in _properties) {
