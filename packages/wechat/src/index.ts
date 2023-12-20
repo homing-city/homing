@@ -118,24 +118,26 @@ export const observerComponentParams = (
 
   const ready = params.lifetimes.ready || params.ready;
 
-  const reactionCleanups: any[] = [];
+  const reactionCleanups = new WeakMap();
   if (!params.data) params.data = {};
-  const paramsData = {};
+  const _paramsData = {};
   for (const key in params.data) {
     if (Object.hasOwnProperty.call(params.data, key)) {
       const prop = Object.getOwnPropertyDescriptor(params.data, key);
       if (prop?.get) {
-        Object.defineProperty(paramsData, key, prop);
+        Object.defineProperty(_paramsData, key, prop);
         delete params.data[key];
       }
     }
   }
 
   params.lifetimes.ready = function (this: WechatMiniprogram.Component.Instance<any, any, any>, ...args) {
-    Object.assign(paramsData, this.data || {});
+    const paramsData = {};
+    Object.assign(paramsData, _paramsData, this.data || {});
 
     const _properties = observable({ ...this.properties });
     const _propertiesMap: PropertyDescriptorMap = {};
+    const _that = this as any;
     for (const key in _properties) {
       _propertiesMap[key] = {
         get() {
@@ -143,6 +145,7 @@ export const observerComponentParams = (
         },
         set(v) {
           _properties[key] = v;
+          _that.setData({ [key]: v });
         }
       };
     }
@@ -170,7 +173,8 @@ export const observerComponentParams = (
 
     const innerData = deepClone(initData);
     const observableData: IData = observable({});
-    reactionCleanups.push(
+    if (!reactionCleanups.has(this)) reactionCleanups.set(this, []);
+    reactionCleanups.get(this).push(
       watch(observableData, changeObserver => {
         updateData(this, changeObserver);
       })
@@ -210,7 +214,7 @@ export const observerComponentParams = (
         this.data[key] = state;
       });
     }
-    reactionCleanups.push(
+    reactionCleanups.get(this).push(
       ...handles.map(handle => {
         return autorun(handle);
       })
@@ -221,9 +225,10 @@ export const observerComponentParams = (
 
   const detached = params.lifetimes.detached;
   params.lifetimes.detached = function (...args) {
-    reactionCleanups.forEach(fn => {
+    reactionCleanups.get(this).forEach((fn: any) => {
       if (fn) fn();
     });
+    reactionCleanups.delete(this);
     return detached?.call(this, ...args);
   };
 
