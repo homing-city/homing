@@ -17,7 +17,7 @@ export const observerPageParams = (
 
   const onLoad = params.onLoad;
 
-  const reactionCleanups: any[] = [];
+  const reactionCleanups = new WeakMap();
   const paramsData = params.data || {};
   params.data = {} as any;
 
@@ -44,7 +44,8 @@ export const observerPageParams = (
     const innerData = deepClone(initData);
     const observableData: IData = observable({});
 
-    reactionCleanups.push(
+    if (!reactionCleanups.has(this)) reactionCleanups.set(this, []);
+    reactionCleanups.get(this).push(
       watch(observableData, changeObserver => {
         updateData(this, changeObserver);
       })
@@ -84,7 +85,8 @@ export const observerPageParams = (
         this.data[key] = state;
       });
     }
-    reactionCleanups.push(
+
+    reactionCleanups.get(this).push(
       ...handles.map(handle => {
         return autorun(handle);
       })
@@ -95,9 +97,10 @@ export const observerPageParams = (
 
   const onUnload = params.onUnload;
   params.onUnload = function (...args) {
-    reactionCleanups.forEach(fn => {
+    reactionCleanups.get(this)?.forEach?.((fn: any) => {
       if (fn) fn();
     });
+    if (reactionCleanups.has(this)) reactionCleanups.delete(this);
     return onUnload?.call(this, ...args);
   };
 
