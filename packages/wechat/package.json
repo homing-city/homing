@@ -1,6 +1,6 @@
 {
   "name": "@homing/wechat",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "Homing in wechat.",
   "keywords": [
     "typescript",
