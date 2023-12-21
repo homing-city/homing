@@ -225,10 +225,10 @@ export const observerComponentParams = (
 
   const detached = params.lifetimes.detached;
   params.lifetimes.detached = function (...args) {
-    reactionCleanups.get(this).forEach((fn: any) => {
+    reactionCleanups.get(this)?.forEach?.((fn: any) => {
       if (fn) fn();
     });
-    reactionCleanups.delete(this);
+    if (reactionCleanups.has(this)) reactionCleanups.delete(this);
     return detached?.call(this, ...args);
   };
 
